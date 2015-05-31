@@ -12,6 +12,8 @@ def generate_rpm_spec(template, patch_file):
         'kmod_filename': 'kpatch-{}.ko'.format(base_name),
         'description': 'Package generated from {} by '
                        'kpatch-package-builder'.format(patch_file),
+        'target_kernel': '3.10.0-229.el7',
+        'target_arch': 'x86_64',
     }
 
     return spec_template.substitute(values)
