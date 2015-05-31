@@ -1,8 +1,9 @@
 import os
 import string
 
-if __name__ == '__main__':
-    patch_file = 'example.patch'
+def generate_rpm_spec(template, patch_file):
+    spec_template = string.Template(template)
+
     base_name, _ = os.path.splitext(patch_file)
 
     values = {
@@ -13,7 +14,11 @@ if __name__ == '__main__':
                        'kpatch-package-builder'.format(patch_file),
     }
 
-    with open('kpatch-patch.spec') as f:
-        spec_template = string.Template(f.read())
+    return spec_template.substitute(values)
 
-    print(spec_template.substitute(values))
+if __name__ == '__main__':
+
+    with open('kpatch-patch.spec') as f:
+        template = f.read()
+
+    print(generate_rpm_spec(template, 'example.patch'))
