@@ -1,5 +1,4 @@
 %define kernel %(uname -r)
-%define patch $patch_file
 %define installdir /var/lib/kpatch
 
 Name:		$name
