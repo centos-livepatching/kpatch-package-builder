@@ -1,5 +1,5 @@
 %define kernel %(uname -r)
-%define patch module-add-livepatch
+%define patch $patch_file
 %define installdir /var/lib/kpatch
 
 Name:		kpatch-%{patch}
@@ -10,7 +10,7 @@ Summary:	kpatch livepatch module - Add livepatch to version
 Group:		System Environment/Kernel
 License:	GPLv2
 
-Source0:	%{patch}.patch
+Source0:	$patch_file
 
 %description 
 Livepatch kernel module. Appends '-livepatch' to /proc/version.
