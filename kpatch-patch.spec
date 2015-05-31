@@ -2,10 +2,10 @@
 %define patch $patch_file
 %define installdir /var/lib/kpatch
 
-Name:		kpatch-%{patch}
+Name:		$name
 Version:	1
 Release:	1%{?dist}
-Summary:	kpatch livepatch module - Add livepatch to version
+Summary:	kpatch livepatch module
 
 Group:		System Environment/Kernel
 License:	GPLv2
@@ -13,7 +13,7 @@ License:	GPLv2
 Source0:	$patch_file
 
 %description 
-Livepatch kernel module. Appends '-livepatch' to /proc/version.
+$description
 
 %prep cp %SOURCE0 %{buildroot}
 
@@ -22,7 +22,7 @@ kpatch-build -t vmlinux %SOURCE0
 
 %install
 mkdir -p %{buildroot}/%{installdir}/%{kernel}
-cp -f "kpatch-%{patch}.ko" "%{buildroot}/%{installdir}/%{kernel}"
+cp -f "$kmod_filename" "%{buildroot}/%{installdir}/%{kernel}"
 
 %files
-%{installdir}/%{kernel}/kpatch-%{patch}.ko
+%{installdir}/%{kernel}/$kmod_filename
