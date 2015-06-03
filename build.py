@@ -17,7 +17,7 @@ Source0:	$patch_file
 
 ExclusiveArch: $target_arch
 
-%description 
+%description
 $description
 
 %prep cp %SOURCE0 %{buildroot}
@@ -33,6 +33,7 @@ cp -f "$kmod_filename" "%{buildroot}/%{installdir}/%{kernel}"
 %files
 %{installdir}/%{kernel}/$kmod_filename
 '''
+
 
 def generate_rpm_spec(template, patch_file, kernel, arch):
     spec_template = string.Template(template)
@@ -60,7 +61,8 @@ def get_args():
                              'module')
     parser.add_argument('-o', '--output', metavar='FILE', default=None,
                         help='name of output spec file')
-    parser.add_argument('-k', '--kernel', metavar='version', default='3.10.0-229.el7',
+    parser.add_argument('-k', '--kernel', metavar='version',
+                        default='3.10.0-229.el7',
                         help='target kernel version to build the livepatch '
                              'module against')
     parser.add_argument('-a', '--arch', metavar='arch', default='x86_64',
@@ -71,9 +73,10 @@ def get_args():
 if __name__ == '__main__':
     args = get_args()
 
-    spec_content = generate_rpm_spec(SPEC_TEMPLATE, args.patch,
-                                                    args.kernel,
-                                                    args.arch)
+    spec_content = generate_rpm_spec(SPEC_TEMPLATE,
+                                     args.patch,
+                                     args.kernel,
+                                     args.arch)
 
     with open(args.output, 'w') as f:
         f.write(spec_content)
