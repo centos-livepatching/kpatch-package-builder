@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import argparse
 import os
 import string
@@ -78,5 +80,8 @@ if __name__ == '__main__':
                                      args.kernel,
                                      args.arch)
 
-    with open(args.output, 'w') as f:
-        f.write(spec_content)
+    if args.output == '-':
+        print(spec_content, end='')
+    else:
+        with open(args.output, 'w') as f:
+            f.write(spec_content)
