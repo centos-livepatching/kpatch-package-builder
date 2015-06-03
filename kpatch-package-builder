@@ -65,11 +65,11 @@ def get_args():
                              'module')
     parser.add_argument('-o', '--output', metavar='FILE', default=None,
                         help='name of output spec file')
-    parser.add_argument('-k', '--kernel', metavar='version',
+    parser.add_argument('-k', '--kernel', metavar='VERSION',
                         default='3.10.0-229.el7',
                         help='target kernel version to build the livepatch '
                              'module against')
-    parser.add_argument('-a', '--arch', metavar='arch', default='x86_64',
+    parser.add_argument('-a', '--arch', metavar='ARCH', default='x86_64',
                         help='architecture to compile the patch against')
 
     return parser.parse_args()
