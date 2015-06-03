@@ -34,7 +34,7 @@ cp -f "$kmod_filename" "%{buildroot}/%{installdir}/%{kernel}"
 %{installdir}/%{kernel}/$kmod_filename
 '''
 
-def generate_rpm_spec(template, patch_file):
+def generate_rpm_spec(template, patch_file, kernel):
     spec_template = string.Template(template)
 
     base_name, _ = os.path.splitext(patch_file)
@@ -45,7 +45,7 @@ def generate_rpm_spec(template, patch_file):
         'kmod_filename': 'kpatch-{}.ko'.format(base_name),
         'description': 'Package generated from {} by '
                        'kpatch-package-builder'.format(patch_file),
-        'target_kernel': '3.10.0-229.el7',
+        'target_kernel': kernel,
         'target_arch': 'x86_64',
     }
 
@@ -60,13 +60,16 @@ def get_args():
                              'module')
     parser.add_argument('-o', '--output', metavar='FILE', default=None,
                         help='name of output spec file')
+    parser.add_argument('-k', '--kernel', metavar='version', default='3.10.0-229.el7',
+                        help='target kernel version to build the livepatch '
+                             'module against')
 
     return parser.parse_args()
 
 if __name__ == '__main__':
     args = get_args()
 
-    spec_content = generate_rpm_spec(SPEC_TEMPLATE, args.patch)
+    spec_content = generate_rpm_spec(SPEC_TEMPLATE, args.patch, args.kernel)
 
     with open(args.output, 'w') as f:
         f.write(spec_content)
