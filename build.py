@@ -20,7 +20,8 @@ def generate_rpm_spec(template, patch_file):
 
     return spec_template.substitute(values)
 
-if __name__ == '__main__':
+
+def get_args():
     parser = argparse.ArgumentParser(description='Generate RPM spec file to '
                                                  'build a kpatch package')
     parser.add_argument('patch', metavar='PATCH',
@@ -29,7 +30,10 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--output', metavar='FILE', default=None,
                         help='name of output spec file')
 
-    args = parser.parse_args()
+    return parser.parse_args()
+
+if __name__ == '__main__':
+    args = get_args()
 
     with open('kpatch-patch.spec') as f:
         template = f.read()
