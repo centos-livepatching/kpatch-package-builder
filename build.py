@@ -26,10 +26,15 @@ if __name__ == '__main__':
     parser.add_argument('patch', metavar='PATCH',
                         help='patch file from which to build the livepatch '
                              'module')
+    parser.add_argument('-o', '--output', metavar='FILE', default=None,
+                        help='name of output spec file')
 
     args = parser.parse_args()
 
     with open('kpatch-patch.spec') as f:
         template = f.read()
 
-    print(generate_rpm_spec(template, args.patch))
+    spec_content = generate_rpm_spec(template, args.patch)
+
+    with open(args.output, 'w') as f:
+        f.write(spec_content)
