@@ -85,5 +85,11 @@ if __name__ == '__main__':
     if args.output == '-':
         print(spec_content, end='')
     else:
-        with open(args.output, 'w') as f:
+        if args.output is None:
+            out_file, _ = os.path.splitext(args.patch)
+            out_file += '.spec'
+        else:
+            out_file = args.output
+
+        with open(out_file, 'w') as f:
             f.write(spec_content)
