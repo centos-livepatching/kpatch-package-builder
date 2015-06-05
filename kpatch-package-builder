@@ -61,29 +61,6 @@ def generate_rpm_spec(template, patch_file, kernel, arch):
     return spec_template.substitute(values)
 
 
-def get_args():
-    parser = argparse.ArgumentParser(description='Generate RPM spec file to '
-                                                 'build a kpatch package')
-    parser.add_argument('patch', metavar='PATCH',
-                        help='patch file from which to build the livepatch '
-                             'module')
-
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument('-o', '--output', metavar='FILE', default=None,
-                       help='name of output spec file')
-    group.add_argument('-b', '--build-rpm', action='store_true',
-                       help='build an RPM package')
-
-    parser.add_argument('-k', '--kernel', metavar='VERSION',
-                        default='3.10.0-229.el7',
-                        help='target kernel version to build the livepatch '
-                             'module against')
-    parser.add_argument('-a', '--arch', metavar='ARCH', default='x86_64',
-                        help='architecture to compile the patch against')
-
-    return parser.parse_args()
-
-
 def get_spec_filename(patch, output=None):
     if output is None:
         out_file, _ = os.path.splitext(patch)
@@ -133,6 +110,29 @@ def build_rpm(patch, spec_content):
 
 
     subprocess.call(['rpmbuild', '-bb', spec_filename])
+
+
+def get_args():
+    parser = argparse.ArgumentParser(description='Generate RPM spec file to '
+                                                 'build a kpatch package')
+    parser.add_argument('patch', metavar='PATCH',
+                        help='patch file from which to build the livepatch '
+                             'module')
+
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('-o', '--output', metavar='FILE', default=None,
+                       help='name of output spec file')
+    group.add_argument('-b', '--build-rpm', action='store_true',
+                       help='build an RPM package')
+
+    parser.add_argument('-k', '--kernel', metavar='VERSION',
+                        default='3.10.0-229.el7',
+                        help='target kernel version to build the livepatch '
+                             'module against')
+    parser.add_argument('-a', '--arch', metavar='ARCH', default='x86_64',
+                        help='architecture to compile the patch against')
+
+    return parser.parse_args()
 
 
 if __name__ == '__main__':
