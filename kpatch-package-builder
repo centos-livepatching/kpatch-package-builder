@@ -122,6 +122,19 @@ def copy_to_rpm_source(source):
     return dest
 
 
+def build_rpm(patch, spec_content):
+    copy_to_rpm_source(patch)
+
+    spec_file_handle, spec_filename = tempfile.mkstemp(prefix='kpatch_',
+                                                       suffix='.spec')
+    print(spec_filename)
+    os.write(spec_file_handle, spec_content)
+    os.close(spec_file_handle)
+
+
+    subprocess.call(['rpmbuild', '-bb', spec_filename])
+
+
 if __name__ == '__main__':
     args = get_args()
 
