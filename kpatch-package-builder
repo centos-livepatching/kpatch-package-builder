@@ -138,8 +138,10 @@ def build_rpm(patch, spec_content):
 if __name__ == '__main__':
     args = get_args()
 
+    patch = os.path.basename(args.patch)
+
     spec_content = generate_rpm_spec(SPEC_TEMPLATE,
-                                     args.patch,
+                                     patch,
                                      args.kernel,
                                      args.arch)
 
