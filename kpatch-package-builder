@@ -5,6 +5,8 @@ from __future__ import print_function
 import argparse
 import os
 import string
+import subprocess
+import sys
 
 SPEC_TEMPLATE = '''%define kernel $target_kernel.$target_arch
 %define installdir /var/lib/kpatch
@@ -83,6 +85,19 @@ def get_spec_filename(args):
         out_file = args.output
 
     return out_file
+
+
+def exit(message):
+    print(message, file=sys.stderr)
+    sys.exit(1)
+
+
+def setup_rpmtree():
+    try:
+        subprocess.call('rpmdev-setuptree')
+    except OSError:
+        exit('You should install rpmdevtools before you do this')
+
 
 if __name__ == '__main__':
     args = get_args()
