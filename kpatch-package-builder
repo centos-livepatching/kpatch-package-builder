@@ -32,7 +32,7 @@ $description
 yumdownloader --source "kernel-$target_kernel"
 
 %build
-kpatch-build -t vmlinux --sourcerpm "kernel-$target_kernel.src.rpm" %SOURCE0
+kpatch-build -t vmlinux --skip-gcc-check --sourcerpm "kernel-$target_kernel.src.rpm" %SOURCE0
 
 %install
 mkdir -p %{buildroot}/%{installdir}/%{kernel}
