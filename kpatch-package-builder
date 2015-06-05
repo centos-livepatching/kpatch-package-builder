@@ -100,11 +100,11 @@ def copy_to_rpm_source(source):
 
 
 def build_rpm(patch, spec_content):
+    setup_rpmtree()
     copy_to_rpm_source(patch)
 
     spec_file_handle, spec_filename = tempfile.mkstemp(prefix='kpatch_',
                                                        suffix='.spec')
-    print(spec_filename)
     os.write(spec_file_handle, spec_content)
     os.close(spec_file_handle)
 
