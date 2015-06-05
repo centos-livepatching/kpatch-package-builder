@@ -65,8 +65,13 @@ def get_args():
     parser.add_argument('patch', metavar='PATCH',
                         help='patch file from which to build the livepatch '
                              'module')
-    parser.add_argument('-o', '--output', metavar='FILE', default=None,
-                        help='name of output spec file')
+
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('-o', '--output', metavar='FILE', default=None,
+                       help='name of output spec file')
+    group.add_argument('-b', '--build-rpm', action='store_true',
+                       help='build an RPM package')
+
     parser.add_argument('-k', '--kernel', metavar='VERSION',
                         default='3.10.0-229.el7',
                         help='target kernel version to build the livepatch '
