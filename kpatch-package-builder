@@ -113,8 +113,26 @@ def build_rpm(patch, spec_content):
 
 
 def get_args():
-    parser = argparse.ArgumentParser(description='Generate RPM spec file to '
-                                                 'build a kpatch package')
+    description = '''\
+Build an RPM package or an RPM spec file to install and manage a kpatch
+livepatch module.'''
+
+    epilog = '''\
+Usage examples:
+
+Build an RPM package for a given patch:
+
+    $ kpatch-package-builder --build-rpm module.patch
+
+Generate a spec file to later build into an RPM:
+
+
+    $ kpatch-package-builder --output module.spec module.patch
+'''
+    parser = argparse.ArgumentParser(description=description,
+                                     epilog=epilog,
+        formatter_class=argparse.RawDescriptionHelpFormatter)
+
     parser.add_argument('patch', metavar='PATCH',
                         help='patch file from which to build the livepatch '
                              'module')
