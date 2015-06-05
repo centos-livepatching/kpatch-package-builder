@@ -92,6 +92,15 @@ def exit(message):
     sys.exit(1)
 
 
+def get_rpm_source_dir():
+    try:
+        sources = subprocess.check_output(['rpm', '--eval', '"%{_sourcedir}"'])
+    except OSError:
+        exit('You should run this on a red hat based system (missing rpm '
+             'command)')
+    return sources.strip().strip('"')
+
+
 def setup_rpmtree():
     try:
         subprocess.call('rpmdev-setuptree')
