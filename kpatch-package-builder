@@ -4,9 +4,11 @@ from __future__ import print_function
 
 import argparse
 import os
+import shutil
 import string
 import subprocess
 import sys
+import tempfile
 
 SPEC_TEMPLATE = '''%define kernel $target_kernel.$target_arch
 %define installdir /var/lib/kpatch
@@ -82,12 +84,12 @@ def get_args():
     return parser.parse_args()
 
 
-def get_spec_filename(args):
-    if args.output is None:
-        out_file, _ = os.path.splitext(args.patch)
+def get_spec_filename(patch, output=None):
+    if output is None:
+        out_file, _ = os.path.splitext(patch)
         out_file += '.spec'
     else:
-        out_file = args.output
+        out_file = output
 
     return out_file
 
