@@ -115,6 +115,13 @@ def setup_rpmtree():
         exit('You should install rpmdevtools before you do this')
 
 
+def copy_to_rpm_source(source):
+    dest = os.path.join(get_rpm_source_dir(),
+                        os.path.basename(source))
+    shutil.copyfile(source, dest)
+    return dest
+
+
 if __name__ == '__main__':
     args = get_args()
 
