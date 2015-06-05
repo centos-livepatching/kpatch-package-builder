@@ -145,8 +145,11 @@ if __name__ == '__main__':
                                      args.kernel,
                                      args.arch)
 
-    if args.output == '-':
-        print(spec_content, end='')
+    if args.build_rpm:
+        build_rpm(args.patch, spec_content)
     else:
-        with open(get_spec_filename(args), 'w') as f:
-            f.write(spec_content)
+        if args.output == '-':
+            print(spec_content, end='')
+        else:
+            with open(get_spec_filename(args.patch, args.output), 'w') as f:
+                f.write(spec_content)
