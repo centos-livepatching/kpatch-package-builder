@@ -15,7 +15,7 @@ SPEC_TEMPLATE = '''%define kernel $target_kernel.$target_arch
 
 Name:		$name
 Version:	1
-Release:	1%{?dist}
+Release:	1
 Summary:	kpatch livepatch module
 
 Group:		System Environment/Kernel
