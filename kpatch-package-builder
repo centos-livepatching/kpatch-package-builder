@@ -118,7 +118,7 @@ def copy_to_rpm_source(source):
     return dest
 
 
-def build_rpm(patch, name, arch, spec_content):
+def build_rpm(patch, name, arch, spec_content, debug=False):
     setup_rpmtree()
     copy_to_rpm_source(patch)
 
@@ -127,7 +127,12 @@ def build_rpm(patch, name, arch, spec_content):
     os.write(spec_file_handle, spec_content)
     os.close(spec_file_handle)
 
-    subprocess.call(['rpmbuild', '-bb', spec_filename])
+    if debug is True:
+        args = ['rpmbuild', '-bb', '--quiet', spec_filename]
+    else:
+        args = ['rpmbuild', '-bb', spec_filename]
+
+    subprocess.call(args)
 
     package_name = 'kpatch-module-{}'.format(name)
     shutil.move(get_absolute_rpm_path(package_name, arch, 1, 1),
@@ -179,6 +184,9 @@ Generate a spec file to later build into an RPM:
     parser.add_argument('-a', '--arch', metavar='ARCH', default='x86_64',
                         help='architecture to compile the patch against')
 
+    parser.add_argument('-d', '--debug', action='store_true',
+                       help='print debug information')
+
     return parser.parse_args()
 
 
@@ -195,7 +203,7 @@ if __name__ == '__main__':
                                      args.arch)
 
     if args.build_rpm:
-        build_rpm(args.patch, name, args.arch, spec_content)
+        build_rpm(args.patch, name, args.arch, spec_content, debug=args.debug)
     else:
         if args.output == '-':
             print(spec_content, end='')
