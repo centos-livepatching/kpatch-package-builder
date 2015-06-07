@@ -118,6 +118,8 @@ def build_rpm(patch, name, arch, spec_content):
     os.write(spec_file_handle, spec_content)
     os.close(spec_file_handle)
 
+    shutil.move(get_absolute_rpm_path(name, arch, 1, 1),
+                get_rpm_name(name, arch, 1, 1))
 
     subprocess.call(['rpmbuild', '-bb', spec_filename])
 
