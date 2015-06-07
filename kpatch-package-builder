@@ -43,13 +43,11 @@ cp -f "$kmod_filename" "%{buildroot}/%{installdir}/%{kernel}"
 '''
 
 
-def generate_rpm_spec(template, patch_file, kernel, arch):
+def generate_rpm_spec(template, name, patch_file, kernel, arch):
     spec_template = string.Template(template)
 
-    base_name, _ = os.path.splitext(patch_file)
-
     values = {
-        'name': 'kpatch-module-{}'.format(base_name),
+        'name': 'kpatch-module-{}'.format(name),
         'patch_file': patch_file,
         'kmod_filename': 'kpatch-{}.ko'.format(base_name),
         'description': 'Package generated from {} by '
@@ -111,7 +109,7 @@ def copy_to_rpm_source(source):
     return dest
 
 
-def build_rpm(patch, spec_content):
+def build_rpm(patch, name, arch, spec_content):
     setup_rpmtree()
     copy_to_rpm_source(patch)
 
@@ -169,14 +167,16 @@ if __name__ == '__main__':
     args = get_args()
 
     patch = os.path.basename(args.patch)
+    name, _ = os.path.splitext(patch)
 
     spec_content = generate_rpm_spec(SPEC_TEMPLATE,
                                      patch,
+                                     'kpatch-module-'+name,
                                      args.kernel,
                                      args.arch)
 
     if args.build_rpm:
-        build_rpm(args.patch, spec_content)
+        build_rpm(args.patch, args.arch, spec_content)
     else:
         if args.output == '-':
             print(spec_content, end='')
