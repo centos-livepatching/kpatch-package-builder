@@ -182,8 +182,8 @@ if __name__ == '__main__':
     name, _ = os.path.splitext(patch)
 
     spec_content = generate_rpm_spec(SPEC_TEMPLATE,
-                                     patch,
                                      name,
+                                     patch,
                                      args.kernel,
                                      args.arch)
 
