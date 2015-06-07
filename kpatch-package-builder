@@ -49,7 +49,7 @@ def generate_rpm_spec(template, name, patch_file, kernel, arch):
     values = {
         'name': 'kpatch-module-{}'.format(name),
         'patch_file': patch_file,
-        'kmod_filename': 'kpatch-{}.ko'.format(base_name),
+        'kmod_filename': 'kpatch-{}.ko'.format(name),
         'description': 'Package generated from {} by '
                        'kpatch-package-builder'.format(patch_file),
         'target_kernel': kernel,
@@ -118,8 +118,9 @@ def build_rpm(patch, name, arch, spec_content):
     os.write(spec_file_handle, spec_content)
     os.close(spec_file_handle)
 
-    shutil.move(get_absolute_rpm_path(name, arch, 1, 1),
-                get_rpm_name(name, arch, 1, 1))
+    package_name = 'kpatch-module-{}'.format(name)
+    shutil.move(get_absolute_rpm_path(package_name, arch, 1, 1),
+                get_rpm_name(package_name, arch, 1, 1))
 
     subprocess.call(['rpmbuild', '-bb', spec_filename])
 
@@ -173,12 +174,12 @@ if __name__ == '__main__':
 
     spec_content = generate_rpm_spec(SPEC_TEMPLATE,
                                      patch,
-                                     'kpatch-module-'+name,
+                                     name,
                                      args.kernel,
                                      args.arch)
 
     if args.build_rpm:
-        build_rpm(args.patch, args.arch, spec_content)
+        build_rpm(args.patch, name, args.arch, spec_content)
     else:
         if args.output == '-':
             print(spec_content, end='')
