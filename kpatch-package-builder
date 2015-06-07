@@ -74,13 +74,22 @@ def exit(message):
     sys.exit(1)
 
 
-def get_rpm_source_dir():
+def get_rpm_env(var):
     try:
-        sources = subprocess.check_output(['rpm', '--eval', '"%{_sourcedir}"'])
+        var_output = subprocess.check_output(['rpm', '--eval',
+                                              '"%{{{}}}"'.format(var)])
     except OSError:
         exit('You should run this on a red hat based system (missing rpm '
              'command)')
-    return sources.strip().strip('"')
+    return var_output.strip().strip('"')
+
+
+def get_rpm_source_dir():
+    return get_rpm_env('_sourcedir')
+
+
+def get_rpm_dir():
+    return get_rpm_env('_rpmdir')
 
 
 def get_rpm_name(name, arch, version, release):
@@ -92,7 +101,7 @@ def get_rpm_name(name, arch, version, release):
 
 def get_absolute_rpm_path(name, arch, version, release):
     rpm = get_rpm_name(name, arch, version, release)
-    return os.path.join(get_rpm_source_dir(), arch, rpm)
+    return os.path.join(get_rpm_dir(), arch, rpm)
 
 
 def setup_rpmtree():
