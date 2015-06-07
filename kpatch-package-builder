@@ -85,6 +85,18 @@ def get_rpm_source_dir():
     return sources.strip().strip('"')
 
 
+def get_rpm_name(name, arch, version, release):
+    return '{name}-{version}-{release}.{arch}.rpm'.format(name=name,
+                                                          arch=arch,
+                                                          version=version,
+                                                          release=release)
+
+
+def get_absolute_rpm_path(name, arch, version, release):
+    rpm = get_rpm_name(name, arch, version, release)
+    return os.path.join(get_rpm_source_dir(), arch, rpm)
+
+
 def setup_rpmtree():
     try:
         subprocess.call('rpmdev-setuptree')
