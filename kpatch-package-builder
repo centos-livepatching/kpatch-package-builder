@@ -118,11 +118,11 @@ def build_rpm(patch, name, arch, spec_content):
     os.write(spec_file_handle, spec_content)
     os.close(spec_file_handle)
 
+    subprocess.call(['rpmbuild', '-bb', spec_filename])
+
     package_name = 'kpatch-module-{}'.format(name)
     shutil.move(get_absolute_rpm_path(package_name, arch, 1, 1),
                 get_rpm_name(package_name, arch, 1, 1))
-
-    subprocess.call(['rpmbuild', '-bb', spec_filename])
 
 
 def get_args():
