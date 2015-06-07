@@ -134,6 +134,12 @@ def build_rpm(patch, name, arch, spec_content):
                 get_rpm_name(package_name, arch, 1, 1))
 
 
+def get_kernel_release():
+    with open('/proc/sys/kernel/osrelease') as f:
+        release = f.read()
+    return '.'.join(release.split('.')[:-1])
+
+
 def get_args():
     description = '''\
 Build an RPM package or an RPM spec file to install and manage a kpatch
@@ -166,9 +172,10 @@ Generate a spec file to later build into an RPM:
                        help='build an RPM package')
 
     parser.add_argument('-k', '--kernel', metavar='VERSION',
-                        default='3.10.0-229.el7',
+                        default=get_kernel_release(),
                         help='target kernel version to build the livepatch '
-                             'module against')
+                             'module against. Defaults to the currently '
+                             'running version')
     parser.add_argument('-a', '--arch', metavar='ARCH', default='x86_64',
                         help='architecture to compile the patch against')
 
