@@ -14,8 +14,8 @@ SPEC_TEMPLATE = '''%define kernel $target_kernel.$target_arch
 %define installdir /var/lib/kpatch
 
 Name:		$name
-Version:	1
-Release:	1
+Version:	$version
+Release:	$release
 Summary:	kpatch livepatch module
 
 Group:		System Environment/Kernel
@@ -43,7 +43,8 @@ cp -f "$kmod_filename" "%{buildroot}/%{installdir}/%{kernel}"
 '''
 
 
-def generate_rpm_spec(template, name, patch_file, kernel, arch):
+def generate_rpm_spec(template, name, patch_file, kernel, arch,
+                      version='1', release='1'):
     spec_template = string.Template(template)
 
     values = {
@@ -54,6 +55,8 @@ def generate_rpm_spec(template, name, patch_file, kernel, arch):
                        'kpatch-package-builder'.format(patch_file),
         'target_kernel': kernel,
         'target_arch': arch,
+        'version': version,
+        'release': release
     }
 
     return spec_template.substitute(values)
@@ -173,6 +176,7 @@ Generate a spec file to later build into an RPM:
     group = parser.add_mutually_exclusive_group()
     group.add_argument('-o', '--output', metavar='FILE', default=None,
                        help='name of output spec file')
+
     group.add_argument('-b', '--build-rpm', action='store_true',
                        help='build an RPM package')
 
@@ -181,8 +185,15 @@ Generate a spec file to later build into an RPM:
                         help='target kernel version to build the livepatch '
                              'module against. Defaults to the currently '
                              'running version')
+
     parser.add_argument('-a', '--arch', metavar='ARCH', default='x86_64',
                         help='architecture to compile the patch against')
+
+    parser.add_argument('-r', '--release', metavar='NUM', default='1',
+                        help='package release version')
+
+    parser.add_argument('-v', '--version', metavar='NUM', default='1',
+                        help='package version number')
 
     parser.add_argument('-d', '--debug', action='store_true',
                        help='print debug information')
@@ -200,7 +211,9 @@ if __name__ == '__main__':
                                      name,
                                      patch,
                                      args.kernel,
-                                     args.arch)
+                                     args.arch,
+                                     args.version,
+                                     args.release)
 
     if args.build_rpm:
         build_rpm(args.patch, name, args.arch, spec_content, debug=args.debug)
