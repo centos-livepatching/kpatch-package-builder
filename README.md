@@ -6,7 +6,8 @@ livepatch module.
 
 
     $ kpatch-package-builder -h
-    usage: kpatch-package-builder [-h] [-o FILE | -b] [-k VERSION] [-a ARCH] [-d]
+    usage: kpatch-package-builder [-h] [-o FILE | -b] [-k VERSION] [-a ARCH]
+                                  [-r NUM] [-v NUM] [-d]
                                   PATCH
 
     Build an RPM package or an RPM spec file to install and manage a kpatch
@@ -24,6 +25,10 @@ livepatch module.
                             target kernel version to build the livepatch module
                             against. Defaults to the currently running version
       -a ARCH, --arch ARCH  architecture to compile the patch against
+      -r NUM, --release NUM
+                            package release version
+      -v NUM, --version NUM
+                            package version number
       -d, --debug           print debug information
 
     Usage examples:
@@ -35,4 +40,3 @@ livepatch module.
     Generate a spec file to later build into an RPM:
 
         $ kpatch-package-builder --output module.spec module.patch
-
