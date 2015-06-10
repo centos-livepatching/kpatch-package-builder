@@ -133,9 +133,9 @@ def build_rpm(patch, name, arch, spec_content, debug=False):
     os.close(spec_file_handle)
 
     if debug is True:
-        args = ['rpmbuild', '-bb', '--quiet', spec_filename]
-    else:
         args = ['rpmbuild', '-bb', spec_filename]
+    else:
+        args = ['rpmbuild', '-bb', '--quiet', spec_filename]
 
     subprocess.call(args)
 
