@@ -218,8 +218,8 @@ if __name__ == '__main__':
                                      patch,
                                      args.kernel,
                                      args.arch,
-                                     args.version,
-                                     args.release)
+                                     args.set_version,
+                                     args.set_release)
 
     if args.build_rpm:
         build_rpm(args.patch, name, args.arch, spec_content, debug=args.debug)
