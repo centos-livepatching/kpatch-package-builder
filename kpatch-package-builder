@@ -10,6 +10,8 @@ import subprocess
 import sys
 import tempfile
 
+__version__ = '0.1.0'
+
 SPEC_TEMPLATE = '''%define kernel $target_kernel.$target_arch
 %define installdir /var/lib/kpatch
 
@@ -168,6 +170,10 @@ Generate a spec file to later build into an RPM:
     parser = argparse.ArgumentParser(description=description,
                                      epilog=epilog,
         formatter_class=argparse.RawDescriptionHelpFormatter)
+
+    parser.add_argument('-v', '--version',
+                        action='version',
+                        version='%(prog)s ' + __version__)
 
     parser.add_argument('patch', metavar='PATCH',
                         help='patch file from which to build the livepatch '
