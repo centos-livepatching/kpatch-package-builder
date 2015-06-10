@@ -189,10 +189,10 @@ Generate a spec file to later build into an RPM:
     parser.add_argument('-a', '--arch', metavar='ARCH', default='x86_64',
                         help='architecture to compile the patch against')
 
-    parser.add_argument('-r', '--release', metavar='NUM', default='1',
+    parser.add_argument('--set-release', metavar='NUM', default='1',
                         help='package release version')
 
-    parser.add_argument('-v', '--version', metavar='NUM', default='1',
+    parser.add_argument('--set-version', metavar='NUM', default='1',
                         help='package version number')
 
     parser.add_argument('-d', '--debug', action='store_true',
