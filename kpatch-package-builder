@@ -3,12 +3,16 @@
 from __future__ import print_function
 
 import argparse
+import logging
 import os
 import shutil
 import string
 import subprocess
 import sys
 import tempfile
+
+logging.basicConfig(level=logging.INFO,
+                    format='kpatch-package-builder: %(message)s')
 
 __version__ = '0.1.0'
 
@@ -47,6 +51,8 @@ cp -f "$kmod_filename" "%{buildroot}/%{installdir}/%{kernel}"
 
 def generate_rpm_spec(template, name, patch_file, kernel, arch,
                       version='1', release='1'):
+    logging.info('generating spec file...')
+
     spec_template = string.Template(template)
 
     values = {
@@ -124,11 +130,14 @@ def copy_to_rpm_source(source):
 
 
 def build_rpm(patch, name, arch, spec_content, debug=False):
+    logging.info('building RPM...')
+
     setup_rpmtree()
     copy_to_rpm_source(patch)
 
     spec_file_handle, spec_filename = tempfile.mkstemp(prefix='kpatch_',
                                                        suffix='.spec')
+    logging.info('writing spec file to %s...', spec_filename)
     os.write(spec_file_handle, spec_content)
     os.close(spec_file_handle)
 
@@ -140,8 +149,10 @@ def build_rpm(patch, name, arch, spec_content, debug=False):
     subprocess.call(args)
 
     package_name = 'kpatch-module-{}'.format(name)
+    dest = get_rpm_name(package_name, arch, 1, 1)
+    logging.info('writing %s...', dest)
     shutil.move(get_absolute_rpm_path(package_name, arch, 1, 1),
-                get_rpm_name(package_name, arch, 1, 1))
+                dest)
 
 
 def get_kernel_release():
@@ -227,5 +238,7 @@ if __name__ == '__main__':
         if args.output == '-':
             print(spec_content, end='')
         else:
-            with open(get_spec_filename(args.patch, args.output), 'w') as f:
+            filename = get_spec_filename(args.patch, args.output)
+            with open(filename, 'w') as f:
+                logging.info('writing %s...', filename)
                 f.write(spec_content)
