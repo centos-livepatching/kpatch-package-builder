@@ -191,6 +191,15 @@ def build_all_packages(args):
     with open(args.manifest) as f:
         manifest = yaml.load(f)
 
+    packages = manifest.get('packages')
+
+    for package in packages:
+        name = package.get('name')
+        version = package.get('version')
+        patches = package.get('patches')
+
+        logging.info('building kpatch-module-%s version %d...', name, version)
+
 
 def get_args():
     description = '''\
