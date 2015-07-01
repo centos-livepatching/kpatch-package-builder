@@ -186,16 +186,20 @@ Generate a spec file to later build into an RPM:
                         action='version',
                         version='%(prog)s ' + __version__)
 
-    parser.add_argument('patch', metavar='PATCH',
-                        help='patch file from which to build the livepatch '
-                             'module')
+    input_group = parser.add_mutually_exclusive_group(required=True)
+    input_group.add_argument('-p', '--patch', metavar='PATCH',
+                             help='patch file from which to build the livepatch '
+                                  'module')
+    input_group.add_argument('--manifest', metavar='FILE',
+                             help='manifest file describing a mapping between '
+                                  'packages, patches and kernel versions')
 
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument('-o', '--output', metavar='FILE', default=None,
-                       help='name of output spec file')
+    output_group = parser.add_mutually_exclusive_group()
+    output_group.add_argument('-o', '--output', metavar='FILE', default=None,
+                              help='name of output spec file')
 
-    group.add_argument('-b', '--build-rpm', action='store_true',
-                       help='build an RPM package')
+    output_group.add_argument('-b', '--build-rpm', action='store_true',
+                              help='build an RPM package')
 
     parser.add_argument('-k', '--kernel', metavar='VERSION',
                         default=get_kernel_release(),
