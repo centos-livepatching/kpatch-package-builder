@@ -161,6 +161,30 @@ def get_kernel_release():
     return '.'.join(release.split('.')[:-1])
 
 
+def build_single_package(args):
+    patch = os.path.basename(args.patch)
+    name, _ = os.path.splitext(patch)
+
+    spec_content = generate_rpm_spec(SPEC_TEMPLATE,
+                                     name,
+                                     patch,
+                                     args.kernel,
+                                     args.arch,
+                                     args.set_version,
+                                     args.set_release)
+
+    if args.build_rpm:
+        build_rpm(args.patch, name, args.arch, spec_content, debug=args.debug)
+    else:
+        if args.output == '-':
+            print(spec_content, end='')
+        else:
+            filename = get_spec_filename(args.patch, args.output)
+            with open(filename, 'w') as f:
+                logging.info('writing %s...', filename)
+                f.write(spec_content)
+
+
 def get_args():
     description = '''\
 Build an RPM package or an RPM spec file to install and manage a kpatch
@@ -225,24 +249,5 @@ Generate a spec file to later build into an RPM:
 if __name__ == '__main__':
     args = get_args()
 
-    patch = os.path.basename(args.patch)
-    name, _ = os.path.splitext(patch)
-
-    spec_content = generate_rpm_spec(SPEC_TEMPLATE,
-                                     name,
-                                     patch,
-                                     args.kernel,
-                                     args.arch,
-                                     args.set_version,
-                                     args.set_release)
-
-    if args.build_rpm:
-        build_rpm(args.patch, name, args.arch, spec_content, debug=args.debug)
-    else:
-        if args.output == '-':
-            print(spec_content, end='')
-        else:
-            filename = get_spec_filename(args.patch, args.output)
-            with open(filename, 'w') as f:
-                logging.info('writing %s...', filename)
-                f.write(spec_content)
+    if args.patch is not None:
+        build_single_package(args)
