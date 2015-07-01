@@ -11,6 +11,8 @@ import subprocess
 import sys
 import tempfile
 
+import yaml
+
 logging.basicConfig(level=logging.INFO,
                     format='kpatch-package-builder: %(message)s')
 
@@ -185,6 +187,11 @@ def build_single_package(args):
                 f.write(spec_content)
 
 
+def build_all_packages(args):
+    with open(args.manifest) as f:
+        manifest = yaml.load(f)
+
+
 def get_args():
     description = '''\
 Build an RPM package or an RPM spec file to install and manage a kpatch
@@ -251,3 +258,5 @@ if __name__ == '__main__':
 
     if args.patch is not None:
         build_single_package(args)
+    else:
+        build_all_packages(args)
