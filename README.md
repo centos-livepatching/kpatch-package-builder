@@ -39,3 +39,12 @@ livepatch module.
     Generate a spec file to later build into an RPM:
 
         $ kpatch-package-builder --output module.spec module.patch
+
+
+Dependencies
+------------
+
+kpatch-package-builder depends on PyYaml and Jinja2. To install on Fedora,
+CentOS and other Red Hat systems:
+
+    $ sudo yum install python-yaml python-jinja2
