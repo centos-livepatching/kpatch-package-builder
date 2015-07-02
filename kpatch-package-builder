@@ -54,7 +54,7 @@ kpatch-build -t vmlinux --skip-gcc-check --sourcerpm "kernel-{{ input.kernel }}.
 %install
 {% for input in kernel_module_inputs %}
 mkdir -p %{buildroot}/%{installdir}/{{ input.kernel }}.{{ arch }}
-cp -f "{{ kmod_filename }}" "%{buildroot}/%{installdir}/{{ input.kernel }}.{{ arch }}"
+cp -f "{{ input.kmod_filename }}" "%{buildroot}/%{installdir}/{{ input.kernel }}.{{ arch }}"
 {% endfor %}
 
 %files
