@@ -3,6 +3,7 @@
 from __future__ import print_function
 
 import argparse
+import collections
 import logging
 import os
 import shutil
@@ -19,8 +20,7 @@ logging.basicConfig(level=logging.INFO,
 
 __version__ = '0.1.0'
 
-SPEC_TEMPLATE = '''%define kernel {{ target_kernel }}.{{ target_arch }}
-%define installdir /var/lib/kpatch
+SPEC_TEMPLATE = '''%define installdir /var/lib/kpatch
 
 Name:		{{ name }}
 Version:	{{ version }}
@@ -30,42 +30,56 @@ Summary:	kpatch livepatch module
 Group:		System Environment/Kernel
 License:	GPLv2
 
-Source0:	{{ patch_file }}
+{% for input in kernel_module_inputs %}
+Source{{ loop.index0 }}:	{{ input.patch }}
+{% endfor %}
 
-ExclusiveArch: {{ target_arch }}
+ExclusiveArch: {{ arch }}
 
 %description
 {{ description }}
 
-%prep cp %SOURCE0 %{buildroot}
-yumdownloader --source "kernel-{{ target_kernel }}"
+{% for _ in kernel_module_inputs %}
+%prep cp %SOURCE{{ loop.index0 }} %{buildroot}
+{% endfor %}
+{% for kernel in kernel_versions %}
+yumdownloader --source "kernel-{{ kernel }}"
+{% endfor %}
 
 %build
-kpatch-build -t vmlinux --skip-gcc-check --sourcerpm "kernel-{{ target_kernel }}.src.rpm" %SOURCE0
+{% for input in kernel_module_inputs %}
+kpatch-build -t vmlinux --skip-gcc-check --sourcerpm "kernel-{{ input.kernel }}.src.rpm" %SOURCE{{ loop.index0 }}
+{% endfor %}
 
 %install
-mkdir -p %{buildroot}/%{installdir}/%{kernel}
-cp -f "{{ kmod_filename }}" "%{buildroot}/%{installdir}/%{kernel}"
+{% for input in kernel_module_inputs %}
+mkdir -p %{buildroot}/%{installdir}/{{ input.kernel }}.{{ arch }}
+cp -f "{{ kmod_filename }}" "%{buildroot}/%{installdir}/{{ input.kernel }}.{{ arch }}"
+{% endfor %}
 
 %files
-%{installdir}/%{kernel}/{{ kmod_filename }}
+{% for input in kernel_module_inputs %}
+%{installdir}/{{ input.kernel }}.{{ arch }}/{{ input.kmod_filename }}
+{% endfor %}
 '''
 
+KernelModuleInputs = collections.namedtuple('KernelModuleInputs',
+                                            'patch kernel kmod_filename')
 
-def generate_rpm_spec(template, name, patch_file, kernel, arch,
+
+def generate_rpm_spec(template, name, kernel_module_inputs, arch,
                       version='1', release='1'):
     logging.info('generating spec file...')
 
-    spec_template = jinja2.Template(template)
+    spec_template = jinja2.Template(template, trim_blocks=True)
 
     values = {
         'name': 'kpatch-module-{}'.format(name),
-        'patch_file': patch_file,
-        'kmod_filename': 'kpatch-{}.ko'.format(name),
+        'kernel_module_inputs': kernel_module_inputs,
+        'kernel_versions': {module.kernel for module in kernel_module_inputs},
         'description': 'Package generated from {} by '
-                       'kpatch-package-builder'.format(patch_file),
-        'target_kernel': kernel,
-        'target_arch': arch,
+                       'kpatch-package-builder'.format(kernel_module_inputs),
+        'arch': arch,
         'version': version,
         'release': release
     }
@@ -168,10 +182,12 @@ def build_single_package(args):
     patch = os.path.basename(args.patch)
     name, _ = os.path.splitext(patch)
 
+    kernel_module_inputs = [KernelModuleInputs(patch, args.kernel,
+                                               'kpatch-{}.ko'.format(name))]
+
     spec_content = generate_rpm_spec(SPEC_TEMPLATE,
                                      name,
-                                     patch,
-                                     args.kernel,
+                                     kernel_module_inputs,
                                      args.arch,
                                      args.set_version,
                                      args.set_release)
