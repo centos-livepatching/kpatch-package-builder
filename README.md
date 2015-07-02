@@ -1,24 +1,55 @@
 kpatch-package-builder
 ======================
 
-Build an RPM package or an RPM spec file to install and manage a kpatch
-livepatch module.
+Build RPM packages to install and manage kernel livepatch modules.
 
+Dependencies
+------------
+
+kpatch-package-builder depends on PyYaml and Jinja2. To install on Fedora,
+CentOS and other Red Hat systems:
+
+    $ sudo yum install python-yaml python-jinja2
+
+
+Manifest files
+--------------
+
+Manifest files describe a set of packages, with each package containing one or
+more patches built for particular kernel versions.
+
+Here is a minimalistic example, which describes a single package,
+`livepatch-test`. This package contains a single kernel patch, which is built
+for a single kernel version (`3.10.0-229.el7`):
+
+```yaml
+packages:
+  - name: livepatch-test
+    version: 1
+    patches:
+      - filename: livepatch-test.patch
+        kernels:
+          - 3.10.0-229.el7
+```
+
+Help
+----
 
     $ kpatch-package-builder -h
-    usage: kpatch-package-builder [-h] [-v] [-o FILE | -b] [-k VERSION] [-a ARCH]
+    usage: kpatch-package-builder [-h] [-v] (-p PATCH | --manifest FILE)
+                                  [-o FILE | -b] [-k VERSION] [-a ARCH]
                                   [--set-release NUM] [--set-version NUM] [-d]
-                                  PATCH
 
     Build an RPM package or an RPM spec file to install and manage a kpatch
     livepatch module.
 
-    positional arguments:
-      PATCH                 patch file from which to build the livepatch module
-
     optional arguments:
       -h, --help            show this help message and exit
       -v, --version         show program's version number and exit
+      -p PATCH, --patch PATCH
+                            patch file from which to build the livepatch module
+      --manifest FILE       manifest file describing a mapping between packages,
+                            patches and kernel versions
       -o FILE, --output FILE
                             name of output spec file
       -b, --build-rpm       build an RPM package
@@ -40,32 +71,3 @@ livepatch module.
 
         $ kpatch-package-builder --output module.spec module.patch
 
-
-Dependencies
-------------
-
-kpatch-package-builder depends on PyYaml and Jinja2. To install on Fedora,
-CentOS and other Red Hat systems:
-
-    $ sudo yum install python-yaml python-jinja2
-
-
-Manifest files
---------------
-
-Manifest files describe a set of packages, with each package containing one or
-more patches built for particular kernel versions.
-
-Here is a minimalistic example, which describes a single package,
-`livepatch-test`. This package contains a single kernel patch, which is built
-for a single kernel version (`3.10.0-229.el7`).
-
-```yaml
-packages:
-  - name: livepatch-test
-    version: 1
-    patches:
-      - filename: livepatch-test.patch
-        kernels:
-          - 3.10.0-229.el7
-```
