@@ -18,7 +18,7 @@ Manifest files
 Manifest files describe a set of packages, with each package containing one or
 more patches built for particular kernel versions.
 
-Here is a minimalistic example, which describes a single package,
+Here is a minimalistic example (`packages.yml`), which describes a single package,
 `livepatch-test`. This package contains a single kernel patch, which is built
 for a single kernel version (`3.10.0-229.el7`):
 
@@ -30,6 +30,12 @@ packages:
       - filename: livepatch-test.patch
         kernels:
           - 3.10.0-229.el7
+```
+
+To build using a manifest file, run
+
+```bash
+$ kpatch-package-builder --build-rpm --manifest packages.yml
 ```
 
 Help
