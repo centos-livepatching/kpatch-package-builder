@@ -146,11 +146,12 @@ def copy_to_rpm_source(source):
     return dest
 
 
-def build_rpm(patch, name, arch, spec_content, debug=False):
+def build_rpm(patches, name, arch, spec_content, debug=False):
     logging.info('building RPM...')
 
     setup_rpmtree()
-    copy_to_rpm_source(patch)
+    for patch in patches:
+        copy_to_rpm_source(patch)
 
     spec_file_handle, spec_filename = tempfile.mkstemp(prefix='kpatch_',
                                                        suffix='.spec')
@@ -178,13 +179,7 @@ def get_kernel_release():
     return '.'.join(release.split('.')[:-1])
 
 
-def build_single_package(args):
-    patch = os.path.basename(args.patch)
-    name, _ = os.path.splitext(patch)
-
-    kernel_module_inputs = [KernelModuleInputs(patch, args.kernel,
-                                               'kpatch-{}.ko'.format(name))]
-
+def build_single_package(name, kernel_module_inputs, args):
     spec_content = generate_rpm_spec(SPEC_TEMPLATE,
                                      name,
                                      kernel_module_inputs,
@@ -193,12 +188,13 @@ def build_single_package(args):
                                      args.set_release)
 
     if args.build_rpm:
-        build_rpm(args.patch, name, args.arch, spec_content, debug=args.debug)
+        patches = [kmod.patch for kmod in kernel_module_inputs]
+        build_rpm(patches, name, args.arch, spec_content, debug=args.debug)
     else:
         if args.output == '-':
             print(spec_content, end='')
         else:
-            filename = get_spec_filename(args.patch, args.output)
+            filename = get_spec_filename(name, args.output)
             with open(filename, 'w') as f:
                 logging.info('writing %s...', filename)
                 f.write(spec_content)
@@ -216,6 +212,18 @@ def build_all_packages(args):
         patches = package.get('patches')
 
         logging.info('building kpatch-module-%s version %d...', name, version)
+
+        modules = []
+
+        for patch in patches:
+            for kernel in patch.get('kernels'):
+                base_patch_name, _ = os.path.splitext(patch.get('filename'))
+                kmod_name = 'kpatch-{}.ko'.format(base_patch_name)
+                inputs = KernelModuleInputs(patch.get('filename'), kernel, kmod_name)
+                print(inputs)
+                modules.append(inputs)
+
+        build_single_package(name, modules, args)
 
 
 def get_args():
@@ -283,6 +291,11 @@ if __name__ == '__main__':
     args = get_args()
 
     if args.patch is not None:
-        build_single_package(args)
+        patch = os.path.basename(args.patch)
+        name, _ = os.path.splitext(patch)
+
+        kernel_module_inputs = [KernelModuleInputs(patch, args.kernel,
+                                                   'kpatch-{}.ko'.format(name))]
+        build_single_package(name, kernel_module_inputs, args)
     else:
         build_all_packages(args)
