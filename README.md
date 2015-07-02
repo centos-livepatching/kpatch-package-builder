@@ -48,3 +48,24 @@ kpatch-package-builder depends on PyYaml and Jinja2. To install on Fedora,
 CentOS and other Red Hat systems:
 
     $ sudo yum install python-yaml python-jinja2
+
+
+Manifest files
+--------------
+
+Manifest files describe a set of packages, with each package containing one or
+more patches built for particular kernel versions.
+
+Here is a minimalistic example, which describes a single package,
+`livepatch-test`. This package contains a single kernel patch, which is built
+for a single kernel version (`3.10.0-229.el7`).
+
+```yaml
+packages:
+  - name: livepatch-test
+    version: 1
+    patches:
+      - filename: livepatch-test.patch
+        kernels:
+          - 3.10.0-229.el7
+```
