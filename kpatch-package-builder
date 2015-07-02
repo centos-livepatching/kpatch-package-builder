@@ -39,8 +39,9 @@ ExclusiveArch: {{ arch }}
 %description
 {{ description }}
 
+%prep
 {% for _ in kernel_module_inputs %}
-%prep cp %SOURCE{{ loop.index0 }} %{buildroot}
+cp %SOURCE{{ loop.index0 }} %{buildroot}
 {% endfor %}
 {% for kernel in kernel_versions %}
 yumdownloader --source "kernel-{{ kernel }}"
