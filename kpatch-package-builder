@@ -221,7 +221,6 @@ def build_all_packages(args):
                 base_patch_name, _ = os.path.splitext(patch.get('filename'))
                 kmod_name = 'kpatch-{}.ko'.format(base_patch_name)
                 inputs = KernelModuleInputs(patch.get('filename'), kernel, kmod_name)
-                print(inputs)
                 modules.append(inputs)
 
         build_single_package(name, modules, args)
