@@ -12,42 +12,43 @@ import sys
 import tempfile
 
 import yaml
+import jinja2
 
 logging.basicConfig(level=logging.INFO,
                     format='kpatch-package-builder: %(message)s')
 
 __version__ = '0.1.0'
 
-SPEC_TEMPLATE = '''%define kernel $target_kernel.$target_arch
+SPEC_TEMPLATE = '''%define kernel {{ target_kernel }}.{{ target_arch }}
 %define installdir /var/lib/kpatch
 
-Name:		$name
-Version:	$version
-Release:	$release
+Name:		{{ name }}
+Version:	{{ version }}
+Release:	{{ release }}
 Summary:	kpatch livepatch module
 
 Group:		System Environment/Kernel
 License:	GPLv2
 
-Source0:	$patch_file
+Source0:	{{ patch_file }}
 
-ExclusiveArch: $target_arch
+ExclusiveArch: {{ target_arch }}
 
 %description
-$description
+{{ description }}
 
 %prep cp %SOURCE0 %{buildroot}
-yumdownloader --source "kernel-$target_kernel"
+yumdownloader --source "kernel-{{ target_kernel }}"
 
 %build
-kpatch-build -t vmlinux --skip-gcc-check --sourcerpm "kernel-$target_kernel.src.rpm" %SOURCE0
+kpatch-build -t vmlinux --skip-gcc-check --sourcerpm "kernel-{{ target_kernel }}.src.rpm" %SOURCE0
 
 %install
 mkdir -p %{buildroot}/%{installdir}/%{kernel}
-cp -f "$kmod_filename" "%{buildroot}/%{installdir}/%{kernel}"
+cp -f "{{ kmod_filename }}" "%{buildroot}/%{installdir}/%{kernel}"
 
 %files
-%{installdir}/%{kernel}/$kmod_filename
+%{installdir}/%{kernel}/{{ kmod_filename }}
 '''
 
 
@@ -55,7 +56,7 @@ def generate_rpm_spec(template, name, patch_file, kernel, arch,
                       version='1', release='1'):
     logging.info('generating spec file...')
 
-    spec_template = string.Template(template)
+    spec_template = jinja2.Template(template)
 
     values = {
         'name': 'kpatch-module-{}'.format(name),
@@ -69,7 +70,7 @@ def generate_rpm_spec(template, name, patch_file, kernel, arch,
         'release': release
     }
 
-    return spec_template.substitute(values)
+    return spec_template.render(values)
 
 
 def get_spec_filename(patch, output=None):
