@@ -201,6 +201,11 @@ def build_single_package(name, kernel_module_inputs, args):
                 f.write(spec_content)
 
 
+def install_debuginfo_kernel(kernel_version):
+    subprocess.call(['sudo', 'yum', 'install', '-y',
+                     'kernel-debuginfo-{}'.format(kernel_version))
+
+
 def build_all_packages(args):
     with open(args.manifest) as f:
         manifest = yaml.load(f)
@@ -218,6 +223,8 @@ def build_all_packages(args):
 
         for patch in patches:
             for kernel in patch.get('kernels'):
+                install_debuginfo_kernel(kernel)
+
                 base_patch_name, _ = os.path.splitext(patch.get('filename'))
                 kmod_name = 'kpatch-{}.ko'.format(base_patch_name)
                 inputs = KernelModuleInputs(patch.get('filename'), kernel, kmod_name)
