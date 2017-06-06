@@ -203,7 +203,7 @@ def build_single_package(name, kernel_module_inputs, args):
 
 def install_debuginfo_kernel(kernel_version):
     subprocess.call(['sudo', 'yum', 'install', '-y',
-                     'kernel-debuginfo-{}'.format(kernel_version))
+                     'kernel-debuginfo-{}'.format(kernel_version)])
 
 
 def build_all_packages(args):
